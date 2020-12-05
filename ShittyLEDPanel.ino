@@ -1,5 +1,14 @@
 
 int z = 0;
+int rando;
+struct rgb{
+  uint8_t r;
+  uint8_t g;
+  uint8_t b;
+};
+
+struct rgb bufferA[2048];
+uint8_t brightness = 1;
 
 void setup(){
   pinMode( 2, OUTPUT );
@@ -15,23 +24,28 @@ void setup(){
   for( int x=2; x<11; x++ ){
     digitalWrite( x, 0 );
   }
-  
+  randomSeed(0);
+  Serial.begin( 115200 );
+  for( int i=0; i<2048; i++ ){
+    bufferA[i].r = i % 255;
+    bufferA[i].g = i % 255;
+    bufferA[i].b = i % 255;
+  }
 }
 
 void loop(){
-  for( int i=0; i<768; i++ ){
+  writeBuffer();
+}
+
+void writeBuffer(){
+  for( int i=0; i<2048; i++ ){
     digitalWrite( 11, 0 );
     digitalWrite( 11, 1 );
-    if( (i+z) % 6 == 0 ){
-      digitalWrite( 3, 1 );
-    }
-    else{
-      digitalWrite( 3, 0 );
-    }
+    digitalWrite( 2, bufferA[i].r & brightness );
+    digitalWrite( 3, bufferA[i].g & brightness );
+    digitalWrite( 4, bufferA[i].b & brightness );
   }
   digitalWrite( 10, 1 );
   digitalWrite( 10, 0 );
-   
-  z++;
-  delay(50);
+  brightness = brightness++ % 255;
 }
